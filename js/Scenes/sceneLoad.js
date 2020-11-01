@@ -9,7 +9,7 @@ class SceneLoad extends Phaser.Scene {
         this.progText.setOrigin(0.5, 0.5);
 
 
-
+        this.load.audio("mhit",["audio/mhit.wav"]);
         this.load.audio("hit", ["audio/hit.wav"]);
         this.load.audio('explosion', ["audio/explosion.wav"]);
 
@@ -19,7 +19,7 @@ class SceneLoad extends Phaser.Scene {
         this.load.image("bullet", "images/bullet.png");
         this.load.image("title", "images/title.png");
         this.load.image("playBtn", "images/playBtn.png");
-
+        this.load.image("missile","images/missile.png");
 
     }
     onProgress(value) {
@@ -30,6 +30,6 @@ class SceneLoad extends Phaser.Scene {
     }
 
     create() {
-        this.scene.start('SceneTitle');
+        this.scene.start('SceneMain');
     }
 }

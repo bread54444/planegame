@@ -9,6 +9,7 @@ class SceneMain extends Phaser.Scene {
 
     }
     create() {
+        this.mhitSound = this.sound.add("mhit");
         this.hitSound = this.sound.add("hit");
         this.explosionSound = this.sound.add("explosion");
         gameState.hBar1 = 1;
@@ -41,7 +42,6 @@ class SceneMain extends Phaser.Scene {
         this.text2.y = 30;
 
 
-
         //
         //
         //bullets p1
@@ -49,6 +49,10 @@ class SceneMain extends Phaser.Scene {
             defaultKey: 'bullet',
             maxSize: 15
         });
+        this.missiles1 = this.physics.add.group({
+            defaultKey:'missile',
+            maxSize:1
+        })
         /*
         bullets p2
         */
@@ -57,7 +61,10 @@ class SceneMain extends Phaser.Scene {
             maxSize: 15
         });
         //
-
+        this.missiles2 = this.physics.add.group({
+            defaultKey:'missile',
+            maxSize:1
+        })
 
         //defining objects 
         //Players
@@ -73,7 +80,8 @@ class SceneMain extends Phaser.Scene {
         cursors2 = this.input.keyboard.addKeys({
             up: Phaser.Input.Keyboard.KeyCodes.W,
             down: Phaser.Input.Keyboard.KeyCodes.S,
-            left: Phaser.Input.Keyboard.KeyCodes.X
+            left: Phaser.Input.Keyboard.KeyCodes.X,
+            right: Phaser.Input.Keyboard.KeyCodes.Z
         });
 
         //this.plane1.setInteractive();
@@ -98,6 +106,16 @@ class SceneMain extends Phaser.Scene {
             console.log(gameState.hBar1);
             this.hitSound.play();
         });
+        //PLANE @ MISSILE/ PLANE 1 
+        this.physics.add.collider(this.plane1, this.missiles2, (_plane1, missile2) => {
+            missile2.destroy();
+            this.cameras.main.shake(200);
+            this.upScore2();
+            this.scoreUpdated2();
+            this.missileCheck1();
+            console.log(gameState.hBar1);
+            this.mhitSound.play();
+        });
         // Plane 1 Bullets / Plane 2 
 
         this.physics.add.collider(this.plane2, this.bullets1, (_plane2, bullet1) => {
@@ -110,7 +128,17 @@ class SceneMain extends Phaser.Scene {
             console.log(gameState.hBar2);
             this.hitSound.play();
         });
+//PLANE 1 MISSILE/ PLANE 2 HIT
+this.physics.add.collider(this.plane2,this.missiles1,(_plane2,missile1) => {
+    missile1.destroy();
+    this.cameras.main.shake(200);
+    this.upScore1();
+    this.scoreUpdated1();
 
+    this.missileCheck2();
+    console.log(gameState.hBar2);
+    this.mhitSound.play();
+})
 
 
     }
@@ -154,6 +182,9 @@ class SceneMain extends Phaser.Scene {
         if (cursors2.left.isDown) {
             this.shootBullet1();
 
+        } 
+        if(cursors2.right.isDown){
+            this.shootMissiles1();
         }
         ///
         //
@@ -176,8 +207,9 @@ class SceneMain extends Phaser.Scene {
 
             this.shootBullet2();
 
-
-
+        }
+        if(cursors.shift.isDown){
+            this.shootMissiles2();
         }
 
 
@@ -194,18 +226,27 @@ class SceneMain extends Phaser.Scene {
         }
 
     }
+    shootMissiles1(){
+        var missiles1 = this.missiles1.get(this.plane1.body.x + 70, this.plane1.body.y + 32);
+        if(missiles1){
+            missiles1.setActive(true);
+            missiles1.setVisible(true);
+            missiles1.body.velocity.x  = 1000;
+        }
+        console.log("Hello")
+    }
+    
 
     hBar1Check() {
         if (gameState.hBar1 > 0) {
-            gameState.hBar1 -= .1;
+            gameState.hBar1 -= .10000000000000000000;
             this.bar1.setPercent(gameState.hBar1);
         }
-        //PLANE 1;
-
-        if (gameState.hBar1 == 0) {
+        //PLANE 1 LOST
+        if (gameState.hBar1 == 0 || gameState.hBar1 < 0) {
             console.log("Plane 1 Lost");
-            plane1Lost = true;
             plane2Lost = false;
+            plane1Lost = true;
             this.explosionSound.play();
             this.scene.stop('SceneMain');
             this.scene.start('SceneOver');
@@ -214,6 +255,24 @@ class SceneMain extends Phaser.Scene {
             gameState.hBar1 = 0.1;
         }
 
+    }
+    missileCheck1() {
+        if (gameState.hBar1 > 0) {
+            gameState.hBar1 -= .5000000000000000000000000000000000;
+            this.bar1.setPercent(gameState.hBar1);
+        }
+        //PLANE 1 LOST
+        if (gameState.hBar1 == 0 || gameState.hBar1 < 0) {
+            console.log("Plane 1 Lost");
+            plane2Lost = false;
+            plane1Lost = true;
+            this.explosionSound.play();
+            this.scene.stop('SceneMain');
+            this.scene.start('SceneOver');
+        }
+        if (gameState.hBar1 == 0.10000000000000014) {
+            gameState.hBar1 = 0.1;
+        }
     }
     scoreUpdated1() {
         this.text1.setText("Score:" + gameState.score1);
@@ -227,11 +286,11 @@ class SceneMain extends Phaser.Scene {
     // plane 2 
     hBar2Check() {
         if (gameState.hBar2 > 0) {
-            gameState.hBar2 -= .1;
+            gameState.hBar2 -= .100000000000000000000000;
             this.bar2.setPercent(gameState.hBar2);
         }
         //PLANE 1 LOST
-        if (gameState.hBar2 == 0) {
+        if (gameState.hBar2 == 0 || gameState.hBar2 < 0) {
             console.log("Plane 2 Lost");
             plane2Lost = true;
             plane1Lost = false;
@@ -243,6 +302,35 @@ class SceneMain extends Phaser.Scene {
             gameState.hBar2 = 0.1;
         }
 
+    }
+    shootMissiles2(){
+        var missiles2 = this.missiles2.get(this.plane2.body.x + 10, this.plane2.body.y + 32);
+        if(missiles2){
+            missiles2.flipX = true;
+            missiles2.setActive(true);
+            missiles2.setVisible(true);
+            missiles2.body.velocity.x  = -1000;
+        }
+        console.log("Hello")
+    }
+
+    missileCheck2() {
+        if (gameState.hBar2 > 0) {
+            gameState.hBar2 -= .5000000000000000000000000000000000;
+            this.bar2.setPercent(gameState.hBar2);
+        }
+        //PLANE 1 LOST
+        if (gameState.hBar2 == 0 || gameState.hBar2 < 0) {
+            console.log("Plane 2 Lost");
+            plane2Lost = true;
+            plane1Lost = false;
+            this.explosionSound.play();
+            this.scene.stop('SceneMain');
+            this.scene.start('SceneOver');
+        }
+        if (gameState.hBar2 == 0.10000000000000014) {
+            gameState.hBar2 = 0.1;
+        }
     }
     scoreUpdated2() {
         this.text2.setText("Score:" + gameState.score2);

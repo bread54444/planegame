@@ -10,9 +10,9 @@ class SceneOver extends Phaser.Scene {
         this.title.setDisplaySize(300, 50).setOrigin(0.5, 0.5);
 
         if (plane1Lost == true) {
-            this.p1L = this.add.text(game.config.width / 2, game.config.height / 2, "PLANE 1 LOST, PRESS R RESTART").setOrigin(0.5, 0.5);
+            this.p1L = this.add.text(game.config.width / 2, game.config.height / 2, "PLANE 2 WON, PRESS R RESTART").setOrigin(0.5, 0.5);
         } else if (plane2Lost == true) {
-            this.p2L = this.add.text(game.config.width / 2, game.config.height / 2, "PLANE 2 LOST, PRESS R  TO RESTART").setOrigin(0.5, 0.5);
+            this.p2L = this.add.text(game.config.width / 2, game.config.height / 2, "PLANE 1 WON, PRESS R  TO RESTART").setOrigin(0.5, 0.5);
         } else {
             this.scene.start('SceneMain');
         }

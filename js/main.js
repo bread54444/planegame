@@ -22,7 +22,7 @@ window.onload = function() {
                 enableBody: true,
             }
         },
-        scene: [SceneLoad, SceneTitle, SceneMain, SceneOver]
+        scene: [SceneLoad, SceneTitle,SceneMain, SceneOver]
     };
 
     
